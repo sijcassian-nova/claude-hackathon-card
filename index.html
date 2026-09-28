@@ -28,8 +28,18 @@
   @media (prefers-reduced-motion:reduce){.cursor{animation:none}}
   h1{font-family:"Source Serif 4",Georgia,serif;font-weight:400;font-size:clamp(34px,5.4vw,56px);line-height:1.08;margin:0 0 14px;letter-spacing:-.01em}
   .lede{margin:0;color:var(--muted);font-size:17px;max-width:600px}
-  .grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:32px;align-items:start;margin-top:36px}
-  @media (max-width:880px){.grid{grid-template-columns:1fr}.preview{order:-1}}
+  .grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);grid-template-areas:"form preview" "post preview";gap:24px 32px;align-items:start;margin-top:36px}
+  .form{grid-area:form}
+  .post{grid-area:post}
+  .preview{grid-area:preview;position:sticky;top:20px}
+  /* phones: fill in the form, scroll to see the card, then download. Nothing sticks. */
+  @media (max-width:880px){
+    .grid{grid-template-columns:1fr;grid-template-areas:"form" "preview" "post"}
+    .preview{position:static}
+    .terminal .dim{display:none}
+    .logos{margin-bottom:24px;gap:22px;flex-wrap:nowrap;zoom:.78}
+    .grid{margin-top:24px}
+  }
   .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px}
   .block+.block{margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}
   .step{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--clay-dark);letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px}
@@ -50,8 +60,7 @@
   .done.show{display:block}
   .done a{color:var(--ink);font-weight:600}
   .tags{font-size:14px;color:var(--muted);margin:12px 0 0}
-  .preview{position:sticky;top:20px}
-  canvas{width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 18px 50px rgba(31,30,29,.16);touch-action:none;background:var(--clay)}
+  canvas{width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 18px 50px rgba(31,30,29,.16);touch-action:manipulation;background:var(--clay)}
   canvas.draggable{cursor:grab}
   canvas.dragging{cursor:grabbing}
   .privacy{font-size:13px;color:var(--muted);margin-top:14px;text-align:center}
@@ -62,12 +71,12 @@
 <div class="wrap">
   <div class="logos" id="logos" aria-label="Claude, Causa Prima and Nova"></div>
 
-  <p class="terminal mono">&nbsp;&nbsp;ACCEPT<br>&nbsp;&nbsp;DECLINE<br>&nbsp;&nbsp;NEGOTIATE<br><span class="on"><b>&gt;</b> LET THE AGENT DECIDE<span class="cursor"></span></span></p>
-  <h1>You're in. Now show the world<br>you're building.</h1>
+  <p class="terminal mono"><span class="dim">&nbsp;&nbsp;ACCEPT<br>&nbsp;&nbsp;DECLINE<br>&nbsp;&nbsp;NEGOTIATE<br></span><span class="on"><b>&gt;</b> LET THE AGENT DECIDE<span class="cursor"></span></span></p>
+  <h1>You're in. Now show the world you're building.</h1>
   <p class="lede">Make your participant card for the Claude Community 48H Hackathon, Madrid, October 2 to 4. Add a photo and your name, then post it on LinkedIn.</p>
 
   <div class="grid">
-    <div class="card">
+    <div class="card form">
       <div class="block">
         <p class="step">Step 01</p>
         <h2>Add your photo</h2>
@@ -76,7 +85,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
           <span id="dropText">Tap or drop a photo here</span>
         </label>
-        <p class="hint">A clear headshot works best. Drag the photo in the preview to reposition it.</p>
+        <p class="hint">A clear headshot works best. Drag the photo on the card to reposition it.</p>
         <label for="zoom">Zoom</label>
         <input type="range" id="zoom" min="1" max="3" step="0.01" value="1">
       </div>
@@ -87,7 +96,14 @@
         <label for="name">Full name</label>
         <input type="text" id="name" maxlength="40" placeholder="Your name" autocomplete="name">
       </div>
+    </div>
 
+    <div class="preview">
+      <canvas id="card" width="1080" height="1350" aria-label="Participant card preview"></canvas>
+      <p class="privacy">Your photo never leaves your device. The card is created right here in your browser.</p>
+    </div>
+
+    <div class="card post">
       <div class="block">
         <p class="step">Step 03</p>
         <h2>Download and post</h2>
@@ -101,11 +117,6 @@
           <br><a href="https://www.linkedin.com/feed/?shareActive=true" target="_blank" rel="noopener">LinkedIn didn't open? Open it here</a>
         </div>
       </div>
-    </div>
-
-    <div class="preview">
-      <canvas id="card" width="1080" height="1350" aria-label="Participant card preview"></canvas>
-      <p class="privacy">Your photo never leaves your device. The card is created right here in your browser.</p>
     </div>
   </div>
 
@@ -343,8 +354,9 @@
 
   let drag = null;
   const toCanvas = e => { const r = canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
+  // Mouse: drag anywhere on the card.
   canvas.addEventListener('pointerdown', e => {
-    if (!state.photo) return;
+    if (!state.photo || e.pointerType !== 'mouse') return;
     drag = { p: toCanvas(e), ox: state.ox, oy: state.oy };
     canvas.setPointerCapture(e.pointerId); canvas.classList.add('dragging');
   });
@@ -356,6 +368,24 @@
   });
   const end = () => { drag = null; canvas.classList.remove('dragging'); };
   canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
+
+  // Touch: a finger on the photo circle repositions it; anywhere else on the card the page scrolls as normal.
+  const onPhoto = p => Math.hypot(p.x - CIRCLE.cx, p.y - CIRCLE.cy) <= CIRCLE.r;
+  canvas.addEventListener('touchstart', e => {
+    if (!state.photo || e.touches.length !== 1) return;
+    const p = toCanvas(e.touches[0]);
+    if (!onPhoto(p)) return;
+    e.preventDefault();
+    drag = { p, ox: state.ox, oy: state.oy };
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    if (!drag) return;
+    e.preventDefault();
+    const p = toCanvas(e.touches[0]);
+    state.ox = drag.ox + (p.x - drag.p.x); state.oy = drag.oy + (p.y - drag.p.y);
+    clampOffsets(); draw();
+  }, { passive: false });
+  canvas.addEventListener('touchend', end); canvas.addEventListener('touchcancel', end);
 
   function fileName() {
     const slug = (state.name.trim() || 'participant').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
