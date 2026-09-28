@@ -59,6 +59,7 @@
   .done{display:none;margin-top:14px;font-size:14px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px}
   .done.show{display:block}
   .done a{color:var(--ink);font-weight:600}
+  .done a.btn{color:#fff}
   .tags{font-size:14px;color:var(--muted);margin:12px 0 0}
   canvas{width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 18px 50px rgba(31,30,29,.16);touch-action:manipulation;background:var(--clay)}
   canvas.draggable{cursor:grab}
@@ -115,6 +116,10 @@
         <div class="done" id="done" role="status">
           <strong>Your card is downloaded.</strong> LinkedIn just opened in a new tab. In the post box, click the image icon 🖼️ and pick <strong id="doneFile">your card</strong> from your Downloads folder. Then write a few words about why you're in.
           <br><a href="https://www.linkedin.com/feed/?shareActive=true" target="_blank" rel="noopener">LinkedIn didn't open? Open it here</a>
+        </div>
+        <div class="done" id="doneMobile" role="status">
+          <strong>Saved your card?</strong> Now open LinkedIn, start a post, tap the photo icon and pick your card from your photos.
+          <a class="btn primary" style="margin-top:12px" href="https://www.linkedin.com/feed/?shareActive=true" target="_blank" rel="noopener">Open LinkedIn</a>
         </div>
       </div>
     </div>
@@ -400,10 +405,14 @@
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     const file = new File([bytes], fileName(), { type: 'image/png' });
 
-    // On phones, the native share sheet can hand the image straight to the LinkedIn app.
+    // On phones, the native share sheet saves the image (or hands it to the LinkedIn app when it's listed).
+    // LinkedIn often isn't in that sheet, so afterwards we always offer a button that opens LinkedIn.
     const touch = matchMedia('(pointer: coarse)').matches;
     if (touch && navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({ files: [file] }).catch(() => {});
+      navigator.share({ files: [file] }).catch(() => {}).finally(() => {
+        $('doneMobile').classList.add('show');
+        $('doneMobile').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
     const a = document.createElement('a');
