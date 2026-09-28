@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hackathon Participant Card</title>
+<meta name="description" content="Create your Claude Community 48H Hackathon Madrid participant card and share it on LinkedIn.">
+<link rel="icon" href="assets/claude-spark-orange.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F1EB; --paper:#FFFDFA; --ink:#1F1E1D; --muted:#6E6A64; --line:#E3DBD1;
+    --clay:#DA7757; --clay-dark:#C4623F; --focus:#1F1E1D;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Outfit,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1140px;margin:0 auto;padding:28px 16px 64px}
+  .logos{display:flex;align-items:center;gap:36px;flex-wrap:wrap;margin-bottom:40px}
+  .logos img{display:block;width:auto}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+  .terminal{font-size:15px;letter-spacing:.02em;margin:0 0 16px;line-height:1.45;color:var(--muted)}
+  .terminal .on{color:var(--ink)}
+  .terminal b{color:var(--clay);font-weight:500}
+  .cursor{display:inline-block;width:.6em;border-bottom:2px solid var(--ink);animation:blink 1s steps(1) infinite;transform:translateY(-3px)}
+  @keyframes blink{50%{opacity:0}}
+  @media (prefers-reduced-motion:reduce){.cursor{animation:none}}
+  h1{font-family:"Source Serif 4",Georgia,serif;font-weight:400;font-size:clamp(34px,5.4vw,56px);line-height:1.08;margin:0 0 14px;letter-spacing:-.01em}
+  .lede{margin:0;color:var(--muted);font-size:17px;max-width:600px}
+  .grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:32px;align-items:start;margin-top:36px}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}.preview{order:-1}}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px}
+  .block+.block{margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}
+  .step{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--clay-dark);letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px}
+  h2{font-family:"Source Serif 4",Georgia,serif;font-weight:400;font-size:22px;margin:0 0 12px}
+  label{display:block;font-size:14px;font-weight:500;margin:14px 0 6px}
+  input[type=text]{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+  .drop{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;border:1.5px dashed #CFC5B9;border-radius:12px;padding:22px 16px;cursor:pointer;text-align:center;color:var(--muted);background:var(--bg);transition:border-color .15s,color .15s}
+  .drop:hover,.drop.over{border-color:var(--clay);color:var(--ink)}
+  .drop:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+  .drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+  input[type=range]{width:100%;accent-color:var(--clay)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-weight:600;font-size:16px;padding:15px 18px;border-radius:10px;border:0;cursor:pointer;width:100%;text-decoration:none}
+  .btn.primary{background:var(--ink);color:#fff}
+  .btn.primary:hover{background:#000}
+  .done{display:none;margin-top:14px;font-size:14px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .done.show{display:block}
+  .done a{color:var(--ink);font-weight:600}
+  .tags{font-size:14px;color:var(--muted);margin:12px 0 0}
+  .preview{position:sticky;top:20px}
+  canvas{width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 18px 50px rgba(31,30,29,.16);touch-action:none;background:var(--clay)}
+  canvas.draggable{cursor:grab}
+  canvas.dragging{cursor:grabbing}
+  .privacy{font-size:13px;color:var(--muted);margin-top:14px;text-align:center}
+  footer{margin-top:48px;font-size:13px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logos" id="logos" aria-label="Claude, Causa Prima and Nova"></div>
+
+  <p class="terminal mono">&nbsp;&nbsp;ACCEPT<br>&nbsp;&nbsp;DECLINE<br>&nbsp;&nbsp;NEGOTIATE<br><span class="on"><b>&gt;</b> LET THE AGENT DECIDE<span class="cursor"></span></span></p>
+  <h1>You're in. Now show the world<br>you're building.</h1>
+  <p class="lede">Make your participant card for the Claude Community 48H Hackathon, Madrid, October 2 to 4. Add a photo and your name, then post it on LinkedIn.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="block">
+        <p class="step">Step 01</p>
+        <h2>Add your photo</h2>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept="image/*" aria-label="Upload your photo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+          <span id="dropText">Tap or drop a photo here</span>
+        </label>
+        <p class="hint">A clear headshot works best. Drag the photo in the preview to reposition it.</p>
+        <label for="zoom">Zoom</label>
+        <input type="range" id="zoom" min="1" max="3" step="0.01" value="1">
+      </div>
+
+      <div class="block">
+        <p class="step">Step 02</p>
+        <h2>Add your name</h2>
+        <label for="name">Full name</label>
+        <input type="text" id="name" maxlength="40" placeholder="Your name" autocomplete="name">
+      </div>
+
+      <div class="block">
+        <p class="step">Step 03</p>
+        <h2>Download and post</h2>
+        <button class="btn primary" id="download" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+          Download and post on LinkedIn
+        </button>
+        <p class="tags">Don't forget to tag <strong>Nova Talent</strong> and <strong>Causa Prima</strong>.</p>
+        <div class="done" id="done" role="status">
+          <strong>Your card is downloaded.</strong> LinkedIn just opened in a new tab. In the post box, click the image icon 🖼️ and pick <strong id="doneFile">your card</strong> from your Downloads folder. Then write a few words about why you're in.
+          <br><a href="https://www.linkedin.com/feed/?shareActive=true" target="_blank" rel="noopener">LinkedIn didn't open? Open it here</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <canvas id="card" width="1080" height="1350" aria-label="Participant card preview"></canvas>
+      <p class="privacy">Your photo never leaves your device. The card is created right here in your browser.</p>
+    </div>
+  </div>
+
+  <footer class="mono">Built with Causa Prima. Hosted at Nova.</footer>
+</div>
+
+<script>
+(() => {
+  const W = 1080, H = 1350;
+  const C = { clay:'#DA7757', cream:'#F6F1EB', white:'#FFFBF6', ink:'#1F1E1D', slot:'#CFC6BC' };
+  const SERIF = '"Source Serif 4", Georgia, serif';
+  const SANS = 'Outfit, system-ui, sans-serif';
+  const MONO = '"IBM Plex Mono", ui-monospace, monospace';
+  const CIRCLE = { cx:540, cy:488, r:195 };
+  const ARC_R = 245; // baseline radius of the curved "CLAUDE COMMUNITY", as in the Madrid key visual
+  const LINKEDIN = 'https://www.linkedin.com/feed/?shareActive=true';
+
+  const NOVA_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="369" height="112" viewBox="0 0 369 112" fill="#1F1E1D"><path fill-rule="evenodd" d="M195.098 55.9614C195.098 38.5557 206.473 26.3186 222.863 26.3186C239.242 26.3186 250.706 38.5557 250.706 55.9614C250.706 73.3672 239.175 85.5932 222.786 85.5932C206.396 85.5932 195.098 73.3672 195.098 55.9614ZM205.612 55.9614C205.612 68.2206 212.349 75.9516 222.863 75.9516C233.366 75.9516 240.114 68.2316 240.114 55.9614C240.114 43.6912 233.377 35.9603 222.863 35.9603C212.349 35.9603 205.612 43.7023 205.612 55.9614ZM139.191 27.3346L166.084 67.9554V27.3346H175.968V84.6544H166.084L139.114 44.0446V84.6544H129.229V27.3346H139.191ZM291.868 60.3459C290.763 63.2506 289.593 66.7847 288.179 71.7988C286.92 67.1713 285.826 63.8028 284.567 60.3459L272.021 27.3346H261.363L282.999 84.6544H293.348L314.685 27.3346H304.248L291.868 60.3459ZM337.955 27.3346H348.237L368.934 84.6544H358.342L353.715 71.4013H332.311L327.684 84.6544H317.258L337.955 27.3346ZM341.809 44.4422L335.304 62.9524H350.866L344.239 44.4422C343.742 43 343.351 41.5235 343.068 40.0245C342.737 41.5208 342.317 42.996 341.809 44.4422Z"/><path fill-rule="evenodd" d="M77.1001 43.1279C50.9362 47.5456 27.7543 63.0076 12.977 85.0961C7.32076 93.2795 2.94484 102.277 0 111.779C17.5714 35.9381 50.3729 0 50.3729 0C50.3729 0 63.2064 14.0594 77.1001 43.1279ZM80.8441 52.7587L81.4626 52.6814C89.6966 71.823 96.1587 91.679 100.768 112C100.768 112 79.3421 90.486 54.0065 85.262C51.6085 84.7762 49.1374 84.7762 46.7394 85.262C21.8787 90.3866 0.795188 111.172 0 111.967C8.92534 94.6077 21.9701 79.701 37.9923 68.552C45.8549 63.227 54.4688 59.1062 63.5488 56.326C68.0653 54.969 72.6708 53.9283 77.332 53.2115C77.6848 53.1649 78.0366 53.1153 78.3883 53.0658C79.2036 52.9508 80.0185 52.8359 80.8441 52.7587Z"/></svg>`;
+
+  const $ = id => document.getElementById(id);
+  const canvas = $('card'), ctx = canvas.getContext('2d');
+  const state = { photo:null, zoom:1, ox:0, oy:0, name:'' };
+  let LOGOS = [];   // [claude, causa prima, nova], in that order of priority
+  let GLOBE = null; // globe illustration lifted from the LinkedIn key visual
+
+  const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+
+  function trim(c) {
+    const x = c.getContext('2d'), { width: w, height: h } = c, p = x.getImageData(0, 0, w, h).data;
+    let x0 = w, y0 = h, x1 = 0, y1 = 0;
+    for (let i = 3; i < p.length; i += 4) if (p[i] > 10) { const n = (i - 3) / 4, px = n % w, py = (n / w) | 0; if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py; }
+    const out = document.createElement('canvas'); out.width = x1 - x0 + 1; out.height = y1 - y0 + 1;
+    out.getContext('2d').drawImage(c, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
+    return out;
+  }
+
+  // Logo on white or transparent background -> trimmed transparent canvas in one ink color.
+  // Pixels that are clearly orange (the Claude spark) get accentHex when given.
+  function recolor(img, inkHex, accentHex) {
+    const w = img.naturalWidth, h = img.naturalHeight;
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.drawImage(img, 0, 0);
+    const d = x.getImageData(0, 0, w, h), p = d.data;
+    const ink = hex(inkHex), acc = accentHex ? hex(accentHex) : null;
+    for (let i = 0; i < p.length; i += 4) {
+      const r = p[i], g = p[i + 1], b = p[i + 2], a0 = p[i + 3] / 255;
+      let col = ink, a;
+      if (acc && r - b > 40) { col = acc; a = Math.min(1, (r - b) / 125) * a0; }
+      else a = (1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255) * a0;
+      p[i] = col[0]; p[i + 1] = col[1]; p[i + 2] = col[2]; p[i + 3] = Math.round(a * 255);
+    }
+    x.putImageData(d, 0, 0);
+    return trim(c);
+  }
+
+  // Cuts an illustration out of a key visual by keying out its terracotta background.
+  function keyOut(img, sx, sy, sw, sh) {
+    const c = document.createElement('canvas'); c.width = sw; c.height = sh;
+    const x = c.getContext('2d'); x.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+    const d = x.getImageData(0, 0, sw, sh), p = d.data, bg = [216, 119, 88];
+    for (let i = 0; i < p.length; i += 4) {
+      const dist = Math.hypot(p[i] - bg[0], p[i + 1] - bg[1], p[i + 2] - bg[2]);
+      const a = Math.min(1, Math.max(0, (dist - 12) / 70));
+      if (a > 0) for (let k = 0; k < 3; k++) p[i + k] = Math.max(0, Math.min(255, (p[i + k] - (1 - a) * bg[k]) / a));
+      p[i + 3] = Math.round(a * 255);
+    }
+    x.putImageData(d, 0, 0);
+    return c;
+  }
+
+  // Equal visual weight: every logo covers the same area, whatever its aspect ratio.
+  function logoSizes(logos, area) {
+    return logos.map(lg => { const ratio = lg.width / lg.height, h = Math.sqrt(area / ratio); return { lg, w: h * ratio, h }; });
+  }
+
+  function fitFont(text, weight, max, min, family, maxW) {
+    let size = max;
+    ctx.font = `${weight} ${size}px ${family}`;
+    while (ctx.measureText(text).width > maxW && size > min) { size -= 2; ctx.font = `${weight} ${size}px ${family}`; }
+    return size;
+  }
+
+  function spacedText(text, x, y, spacing) {
+    if ('letterSpacing' in ctx) { ctx.letterSpacing = spacing + 'px'; ctx.fillText(text, x, y); ctx.letterSpacing = '0px'; return; }
+    ctx.fillText(text, x, y);
+  }
+
+  // Text along the top of a circle, centered at 12 o'clock, letters upright and facing out.
+  function arcText(text, cx, cy, r, spacing) {
+    const widths = [...text].map(ch => ctx.measureText(ch).width + spacing);
+    const total = widths.reduce((a, b) => a + b, 0) - spacing;
+    let angle = -Math.PI / 2 - total / r / 2;
+    ctx.save(); ctx.textAlign = 'center';
+    [...text].forEach((ch, i) => {
+      const a = angle + (widths[i] - spacing) / 2 / r;
+      ctx.save();
+      ctx.translate(cx + r * Math.cos(a), cy + r * Math.sin(a));
+      ctx.rotate(a + Math.PI / 2);
+      ctx.fillText(ch, 0, 0);
+      ctx.restore();
+      angle += widths[i] / r;
+    });
+    ctx.restore();
+  }
+
+  const frameSize = () => 2 * CIRCLE.r;
+  const coverScale = im => Math.max(frameSize() / im.width, frameSize() / im.height) * state.zoom;
+
+  function clampOffsets() {
+    const im = state.photo; if (!im) return;
+    const s = coverScale(im);
+    const mx = (im.width * s - frameSize()) / 2, my = (im.height * s - frameSize()) / 2;
+    state.ox = Math.max(-mx, Math.min(mx, state.ox));
+    state.oy = Math.max(-my, Math.min(my, state.oy));
+  }
+
+  function drawPhoto() {
+    const { cx, cy, r } = CIRCLE;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = C.cream; ctx.fill();
+    ctx.clip();
+    const im = state.photo;
+    if (im) {
+      const s = coverScale(im), dw = im.width * s, dh = im.height * s;
+      ctx.drawImage(im, cx - dw / 2 + state.ox, cy - dh / 2 + state.oy, dw, dh);
+    } else {
+      ctx.fillStyle = C.slot;
+      ctx.beginPath(); ctx.arc(cx, cy - 42, 74, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx, cy + r + 30, 168, 168, 0, Math.PI, 0); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function nameLines(name) {
+    const parts = name.trim().split(/\s+/);
+    const one = [parts.join(' ')];
+    if (parts.length < 2) return one;
+    if (parts.length === 2 && fitFont(one[0], 400, 84, 44, SERIF, W - 140) >= 72) return one;
+    return [parts[0], parts.slice(1).join(' ')];
+  }
+
+  function draw() {
+    ctx.fillStyle = C.clay; ctx.fillRect(0, 0, W, H);
+    ctx.textBaseline = 'alphabetic';
+
+    // partner logos across the top, like the LinkedIn key visual: Claude, Causa Prima, Nova, equal weight
+    if (LOGOS.length) {
+      const sizes = logoSizes(LOGOS, 15000), gap = 84;
+      const total = sizes.reduce((a, s) => a + s.w, 0) + gap * (sizes.length - 1);
+      let x = (W - total) / 2; const midY = 92;
+      sizes.forEach(s => { ctx.drawImage(s.lg, x, midY - s.h / 2, s.w, s.h); x += s.w + gap; });
+    }
+
+    ctx.fillStyle = C.white; ctx.font = `500 50px ${SANS}`;
+    arcText('CLAUDE COMMUNITY', CIRCLE.cx, CIRCLE.cy, ARC_R, 9);
+    drawPhoto();
+
+    const lines = nameLines(state.name.trim() || 'Your Name');
+    const size = Math.min(...lines.map(l => fitFont(l, 400, 84, 44, SERIF, W - 140)));
+    ctx.textAlign = 'center'; ctx.fillStyle = C.white; ctx.font = `400 ${size}px ${SERIF}`;
+    const lh = size * 1.12, top = lines.length > 1 ? 786 : 806;
+    lines.forEach((l, i) => ctx.fillText(l, W / 2, top + i * lh));
+    const bottom = top + (lines.length - 1) * lh;
+
+    ctx.fillStyle = C.ink; ctx.font = `500 32px ${SANS}`;
+    ctx.fillText('48H Hackathon participant · Madrid', W / 2, bottom + 56);
+
+    // terminal line from the swag
+    ctx.textAlign = 'left'; ctx.font = `500 30px ${MONO}`;
+    const cmd = 'LET THE AGENT DECIDE_', pre = '> ';
+    const cw = ctx.measureText(pre + cmd).width, cx0 = (W - cw) / 2, ty = bottom + 120;
+    ctx.fillStyle = C.white; ctx.fillText(pre, cx0, ty);
+    ctx.fillStyle = C.ink; ctx.fillText(cmd, cx0 + ctx.measureText(pre).width, ty);
+
+    // globe rising from the bottom edge, with dates and venue either side, as in the key visual
+    if (GLOBE) {
+      const gw = 520, gh = gw * GLOBE.height / GLOBE.width;
+      ctx.drawImage(GLOBE, (W - gw) / 2, H - gh, gw, gh);
+    }
+    ctx.fillStyle = C.ink; ctx.font = `700 40px ${SERIF}`; ctx.textAlign = 'center';
+    // both side labels share one vertical center (MID); the venue block includes the pin on top
+    const MID = 1225, CAP = 28, LINE = 48, PIN = 53, PIN_GAP = 18;
+    const textH = CAP + LINE;                       // cap top of line 1 to baseline of line 2
+    const dateTop = MID - textH / 2;
+    ctx.fillText('02 - 04', 150, dateTop + CAP); ctx.fillText('Oct', 150, dateTop + CAP + LINE);
+    const venueTop = MID - (PIN + PIN_GAP + textH) / 2;
+    drawPin(W - 150, venueTop + 17);
+    const vText = venueTop + PIN + PIN_GAP;
+    ctx.fillText('Nova', W - 150, vText + CAP); ctx.fillText('House', W - 150, vText + CAP + LINE);
+  }
+
+  // Location pin, so "Nova House" reads as the venue and not as a second Nova logo.
+  function drawPin(cx, cy) {
+    ctx.save();
+    ctx.fillStyle = C.ink;
+    ctx.beginPath(); ctx.arc(cx, cy, 17, Math.PI * 0.8, Math.PI * 0.2); ctx.lineTo(cx, cy + 36); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = C.clay;
+    ctx.beginPath(); ctx.arc(cx, cy, 6.5, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  // Always black and white, downscaled for speed.
+  function prepPhoto(im) {
+    const max = 1600, s = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight));
+    const c = document.createElement('canvas');
+    c.width = Math.round(im.naturalWidth * s); c.height = Math.round(im.naturalHeight * s);
+    const x = c.getContext('2d'); x.drawImage(im, 0, 0, c.width, c.height);
+    const d = x.getImageData(0, 0, c.width, c.height), p = d.data;
+    for (let i = 0; i < p.length; i += 4) p[i] = p[i + 1] = p[i + 2] = 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2];
+    x.putImageData(d, 0, 0);
+    return c;
+  }
+
+  function loadFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(file);
+    loadImg(url).then(im => {
+      state.photo = prepPhoto(im);
+      URL.revokeObjectURL(url);
+      state.zoom = 1; state.ox = 0; state.oy = 0; $('zoom').value = 1;
+      $('dropText').textContent = 'Photo added · tap to change';
+      canvas.classList.add('draggable'); draw();
+    }).catch(() => { $('dropText').textContent = "That file didn't work. Try a JPG or PNG."; });
+  }
+
+  $('file').addEventListener('change', e => loadFile(e.target.files[0]));
+  const drop = $('drop');
+  ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => loadFile(e.dataTransfer.files[0]));
+
+  $('zoom').addEventListener('input', e => { state.zoom = +e.target.value; clampOffsets(); draw(); });
+  $('name').addEventListener('input', e => { state.name = e.target.value; draw(); });
+
+  let drag = null;
+  const toCanvas = e => { const r = canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
+  canvas.addEventListener('pointerdown', e => {
+    if (!state.photo) return;
+    drag = { p: toCanvas(e), ox: state.ox, oy: state.oy };
+    canvas.setPointerCapture(e.pointerId); canvas.classList.add('dragging');
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const p = toCanvas(e);
+    state.ox = drag.ox + (p.x - drag.p.x); state.oy = drag.oy + (p.y - drag.p.y);
+    clampOffsets(); draw();
+  });
+  const end = () => { drag = null; canvas.classList.remove('dragging'); };
+  canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
+
+  function fileName() {
+    const slug = (state.name.trim() || 'participant').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return `claude-hackathon-madrid-${slug}.png`;
+  }
+
+  // Everything below runs synchronously inside the click, so the LinkedIn tab and the share sheet aren't blocked.
+  $('download').addEventListener('click', () => {
+    draw();
+    const dataUrl = canvas.toDataURL('image/png');
+    const bin = atob(dataUrl.split(',')[1]), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const file = new File([bytes], fileName(), { type: 'image/png' });
+
+    // On phones, the native share sheet can hand the image straight to the LinkedIn app.
+    const touch = matchMedia('(pointer: coarse)').matches;
+    if (touch && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file] }).catch(() => {});
+      return;
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file); a.download = file.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    window.open(LINKEDIN, '_blank', 'noopener');
+    $('doneFile').textContent = file.name;
+    $('done').classList.add('show');
+  });
+
+  draw();
+  const fonts = [`400 84px ${SERIF}`, `700 40px ${SERIF}`, `500 50px ${SANS}`, `500 32px ${SANS}`, `500 30px ${MONO}`].map(f => document.fonts.load(f));
+  Promise.all([
+    loadImg('assets/claude-wordmark.png'),
+    loadImg('assets/causa-prima-black.webp'),
+    loadImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(NOVA_SVG)),
+    loadImg('assets/kv-globe-source.webp'),
+    ...fonts
+  ]).then(([claude, causa, nova, kv]) => {
+    const novaCanvas = document.createElement('canvas');
+    novaCanvas.width = nova.naturalWidth * 4; novaCanvas.height = nova.naturalHeight * 4;
+    novaCanvas.getContext('2d').drawImage(nova, 0, 0, novaCanvas.width, novaCanvas.height);
+    LOGOS = [recolor(claude, C.ink, C.white), recolor(causa, C.ink), novaCanvas];
+    GLOBE = keyOut(kv, 396, 1097, 716, 403);
+    const pageLogos = [recolor(claude, C.ink, C.clay), recolor(causa, C.ink), novaCanvas];
+    logoSizes(pageLogos, 2600).forEach((s, i) => {
+      const img = new Image();
+      img.src = s.lg.toDataURL(); img.style.height = s.h + 'px';
+      img.alt = ['Claude', 'Causa Prima', 'Nova'][i];
+      $('logos').appendChild(img);
+    });
+    draw();
+  }).catch(err => { console.error(err); draw(); });
+})();
+</script>
+</body>
+</html>
